@@ -23,4 +23,8 @@ public class Player : MonoBehaviour {
             rb.velocity = directionVector * speed;
         }
     }
+
+    public void ResetPosition() {
+        this.transform.localPosition = Vector2.zero;
+    }
 }
