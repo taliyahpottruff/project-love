@@ -22,9 +22,11 @@ public class Date : MonoBehaviour {
     public PlayerAttackBar playerAttackBar;
     public Text mainDialog;
     public GameObject dateKillerPrefab;
+    public GameObject cupidsArrowPrefab;
     public RectTransform dateMeter;
     public RectTransform dateBar;
     public Transform firingPointsParent;
+    public AudioClip[] audioClips;
 
     private Transform[] firingPoints;
     private PlayerAction playerAction = PlayerAction.None;
@@ -34,11 +36,13 @@ public class Date : MonoBehaviour {
     private SpriteRenderer sr;
     private DateObject date;
     private AttackType attackType = AttackType.FireAtPlayer;
+    private AudioSource src;
 
     private void Start() {
         battleSquare.SetActive(false);
 
         sr = GetComponent<SpriteRenderer>();
+        src = GetComponent<AudioSource>();
         
         firingPoints = new Transform[firingPointsParent.childCount];
         for (int i = 0; i < firingPointsParent.childCount; i++) {
@@ -204,6 +208,7 @@ public class Date : MonoBehaviour {
 
             float progress = 25;
             dateProgress += progress;
+            PlaySound(3);
             NextPhase();
         }
     }
@@ -228,8 +233,13 @@ public class Date : MonoBehaviour {
             float penaltyPercent = (goal - achieved) / goal;
             float penalty = (dateSuccess * 0.05f) * penaltyPercent;
             dateProgress -= penalty;
+            PlaySound(4);
             NextPhase();
         };
+    }
+
+    public void PlaySound(int id) {
+        src.PlayOneShot(audioClips[id]);
     }
 
     private IEnumerator DelayedSpacePress() {
@@ -242,25 +252,27 @@ public class Date : MonoBehaviour {
         int stage = 0;
         while (true) {
             float cycleSpeed = 0.5f;
+            GameObject chosenPrefab = dateKillerPrefab;
+            if (Random.Range(0, 10) == 0) chosenPrefab = cupidsArrowPrefab;
 
             switch(attackType) {
                 case AttackType.FireAtPlayer:
                     cycleSpeed = 0.5f;
-                    FireAtPlayer();
+                    FireAtPlayer(chosenPrefab);
                     break;
                 case AttackType.FireAtPlayerRandom:
                     cycleSpeed = 0.5f;
-                    FireAtPlayerRandom();
+                    FireAtPlayerRandom(chosenPrefab);
                     break;
                 case AttackType.FireHorizontally:
                     cycleSpeed = 0.1f;
-                    FireAtPlayerHorizontally();
+                    FireAtPlayerHorizontally(chosenPrefab);
                     break;
                 case AttackType.AlternatingCone:
                     cycleSpeed = 0.5f;
                     if (stage == 0) stage = 1;
                     else stage = 0;
-                    AlternatingCone(stage);
+                    AlternatingCone(chosenPrefab, stage);
                     break;
             }
             yield return new WaitForSeconds(cycleSpeed);
@@ -274,29 +286,29 @@ public class Date : MonoBehaviour {
     }
 
     #region Attacks
-    private void FireAtPlayer() {
-        GameObject go = Instantiate<GameObject>(dateKillerPrefab, firingPoints[0].position, Quaternion.identity);
+    private void FireAtPlayer(GameObject prefab) {
+        GameObject go = Instantiate<GameObject>(prefab, firingPoints[0].position, Quaternion.identity);
         Projectile projectile = go.GetComponent<Projectile>();
         projectile.InitProjectile(player.transform.position);
     }
 
-    private void FireAtPlayerRandom() {
+    private void FireAtPlayerRandom(GameObject prefab) {
         int point = Random.Range(1, 5);
-        GameObject go = Instantiate<GameObject>(dateKillerPrefab, firingPoints[point].position, Quaternion.identity);
+        GameObject go = Instantiate<GameObject>(prefab, firingPoints[point].position, Quaternion.identity);
         Projectile projectile = go.GetComponent<Projectile>();
         projectile.InitProjectile(player.transform.position);
     }
 
-    private void FireAtPlayerHorizontally() {
+    private void FireAtPlayerHorizontally(GameObject prefab) {
         int point = Random.Range(5, 15);
-        GameObject go = Instantiate<GameObject>(dateKillerPrefab, firingPoints[point].position, Quaternion.identity);
+        GameObject go = Instantiate<GameObject>(prefab, firingPoints[point].position, Quaternion.identity);
         Projectile projectile = go.GetComponent<Projectile>();
         projectile.InitProjectile(new Vector2(0, firingPoints[point].position.y));
     }
 
-    private void AlternatingCone(int stage) {
+    private void AlternatingCone(GameObject prefab, int stage) {
         for (int i = 0; i < 6 + stage; i++) {
-            GameObject go = Instantiate<GameObject>(dateKillerPrefab, firingPoints[0].position, Quaternion.identity);
+            GameObject go = Instantiate<GameObject>(prefab, firingPoints[0].position, Quaternion.identity);
             Projectile projectile = go.GetComponent<Projectile>();
             projectile.InitProjectile(Utils.Rotate(Vector2.down, (36 * i) - 90 - (18 * stage)));
         }

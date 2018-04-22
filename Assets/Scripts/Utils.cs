@@ -10,7 +10,7 @@ public class Utils : MonoBehaviour {
     }
 
     public static AttackType GetRandomAttackType() {
-        int index = 3; //Random.Range(0, 4);
+        int index = Random.Range(0, 4);
 
         switch(index) {
             case 0:

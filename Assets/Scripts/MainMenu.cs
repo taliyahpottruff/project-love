@@ -1,9 +1,16 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 
+[RequireComponent(typeof(AudioSource))]
 public class MainMenu : MonoBehaviour {
+    public AudioClip buttonSound;
+
+    AudioSource src;
+
+    private void Start() {
+        src = GetComponent<AudioSource>();
+    }
+
     private void GenerateDateSequence(int length) {
         Game.dateSequence.Clear();
         Game.gameLength = length;
@@ -24,5 +31,9 @@ public class MainMenu : MonoBehaviour {
 
     public void StartSingle() {
         StartGame(1);
+    }
+
+    public void PlaySound() {
+        src.PlayOneShot(buttonSound);
     }
 }
