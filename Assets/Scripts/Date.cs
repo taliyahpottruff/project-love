@@ -24,18 +24,26 @@ public class Date : MonoBehaviour {
     public GameObject dateKillerPrefab;
     public RectTransform dateMeter;
     public RectTransform dateBar;
+    public Transform firingPointsParent;
 
+    private Transform[] firingPoints;
     private PlayerAction playerAction = PlayerAction.None;
     private PlayerActionStatus lastActionStatus = PlayerActionStatus.None;
     private string currentDialog = "";
     private bool dialogMoveOn = false;
     private SpriteRenderer sr;
     private DateObject date;
+    private AttackType attackType = AttackType.FireAtPlayer;
 
     private void Start() {
         battleSquare.SetActive(false);
 
         sr = GetComponent<SpriteRenderer>();
+        
+        firingPoints = new Transform[firingPointsParent.childCount];
+        for (int i = 0; i < firingPointsParent.childCount; i++) {
+            firingPoints[i] = firingPointsParent.GetChild(i);
+        }
 
         date = Game.currentDate;
 
@@ -109,6 +117,7 @@ public class Date : MonoBehaviour {
                 battleSquare.SetActive(true);
                 player.ResetPosition();
                 mainDialog.gameObject.SetActive(false);
+                attackType = Utils.GetRandomAttackType();
                 turnPhase = TurnPhase.EnemyAttack;
                 StartCoroutine(EnemyFire());
                 break;
@@ -230,19 +239,69 @@ public class Date : MonoBehaviour {
 
     private IEnumerator EnemyFire() {
         float cycles = 0;
+        int stage = 0;
         while (true) {
-            GameObject go = Instantiate<GameObject>(dateKillerPrefab, this.transform.position, Quaternion.identity);
-            Projectile projectile = go.GetComponent<Projectile>();
-            projectile.InitProjectile(player.transform.position);
-            yield return new WaitForSeconds(0.5f);
+            float cycleSpeed = 0.5f;
+
+            switch(attackType) {
+                case AttackType.FireAtPlayer:
+                    cycleSpeed = 0.5f;
+                    FireAtPlayer();
+                    break;
+                case AttackType.FireAtPlayerRandom:
+                    cycleSpeed = 0.5f;
+                    FireAtPlayerRandom();
+                    break;
+                case AttackType.FireHorizontally:
+                    cycleSpeed = 0.1f;
+                    FireAtPlayerHorizontally();
+                    break;
+                case AttackType.AlternatingCone:
+                    cycleSpeed = 0.5f;
+                    if (stage == 0) stage = 1;
+                    else stage = 0;
+                    AlternatingCone(stage);
+                    break;
+            }
+            yield return new WaitForSeconds(cycleSpeed);
             cycles++;
 
-            float secondPassed = (float)cycles * 0.5f;
+            float secondPassed = (float)cycles * cycleSpeed;
             Debug.Log(secondPassed);
             if (secondPassed >= 10) break;
         }
         NextPhase();
     }
+
+    #region Attacks
+    private void FireAtPlayer() {
+        GameObject go = Instantiate<GameObject>(dateKillerPrefab, firingPoints[0].position, Quaternion.identity);
+        Projectile projectile = go.GetComponent<Projectile>();
+        projectile.InitProjectile(player.transform.position);
+    }
+
+    private void FireAtPlayerRandom() {
+        int point = Random.Range(1, 5);
+        GameObject go = Instantiate<GameObject>(dateKillerPrefab, firingPoints[point].position, Quaternion.identity);
+        Projectile projectile = go.GetComponent<Projectile>();
+        projectile.InitProjectile(player.transform.position);
+    }
+
+    private void FireAtPlayerHorizontally() {
+        int point = Random.Range(5, 15);
+        GameObject go = Instantiate<GameObject>(dateKillerPrefab, firingPoints[point].position, Quaternion.identity);
+        Projectile projectile = go.GetComponent<Projectile>();
+        projectile.InitProjectile(new Vector2(0, firingPoints[point].position.y));
+    }
+
+    private void AlternatingCone(int stage) {
+        for (int i = 0; i < 6 + stage; i++) {
+            GameObject go = Instantiate<GameObject>(dateKillerPrefab, firingPoints[0].position, Quaternion.identity);
+            Projectile projectile = go.GetComponent<Projectile>();
+            projectile.InitProjectile(Utils.Rotate(Vector2.down, (36 * i) - 90 - (18 * stage)));
+        }
+    }
+    #endregion
 }
 
 public enum TurnPhase {
@@ -255,4 +314,8 @@ public enum PlayerAction {
 
 public enum PlayerActionStatus {
     None, FlirtSuccess, FlirtFailure, JokeSuccess, JokeFailure, StorySuccess, StoryFailure
+}
+
+public enum AttackType {
+    FireAtPlayer, FireAtPlayerRandom, FireHorizontally, AlternatingCone
 }
