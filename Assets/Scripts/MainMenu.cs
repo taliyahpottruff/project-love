@@ -26,6 +26,7 @@ public class MainMenu : MonoBehaviour {
     public void StartGame(int length) {
         GenerateDateSequence(length);
         Game.LoadNextDate();
+        Game.SetLastScene("Menu");
         SceneManager.LoadScene("Battle");
     }
 

@@ -27,6 +27,7 @@ public class Date : MonoBehaviour {
     public RectTransform dateBar;
     public Transform firingPointsParent;
     public AudioClip[] audioClips;
+    public Animator feedbackTextAnim;
 
     private Transform[] firingPoints;
     private PlayerAction playerAction = PlayerAction.None;
@@ -51,7 +52,11 @@ public class Date : MonoBehaviour {
 
         date = Game.currentDate;
 
-        if (date != null) {
+        if (date != null) { //We have a date to do
+            if (Game.IsLastScene("Battle")) {
+                feedbackTextAnim.Play("FeedbackText-Action");
+                PlaySound(2);
+            }
             sr.sprite = date.sprite;
             dateSuccess = 100 * date.difficulty;
             playerAttackBar.goal = Mathf.Clamp(50 + (25 * (date.difficulty / Game.gameLength)), 0, 100);
@@ -91,6 +96,7 @@ public class Date : MonoBehaviour {
             //Player succeeds
             if (Game.dateSequence.Count > 0) { //More dates
                 Game.LoadNextDate();
+                Game.SetLastScene("Battle");
                 SceneManager.LoadScene("Battle");
             } else { //No more dates
                 //Player wins
@@ -206,7 +212,7 @@ public class Date : MonoBehaviour {
                     break;
             }
 
-            float progress = 25;
+            float progress = 50;
             dateProgress += progress;
             PlaySound(3);
             NextPhase();
