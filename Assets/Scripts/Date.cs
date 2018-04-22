@@ -57,6 +57,11 @@ public class Date : MonoBehaviour {
                 feedbackTextAnim.Play("FeedbackText-Action");
                 PlaySound(2);
             }
+
+            if (date.difficulty >= 10) {
+                GameObject.FindGameObjectWithTag("Music Player").GetComponent<MusicPlayer>().PlayBossIntro();
+            }
+
             sr.sprite = date.sprite;
             dateSuccess = 100 * date.difficulty;
             playerAttackBar.goal = Mathf.Clamp(50 + (25 * (date.difficulty / Game.gameLength)), 0, 100);

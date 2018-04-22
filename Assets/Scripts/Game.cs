@@ -8,6 +8,14 @@ public class Game : MonoBehaviour {
     public static int gameLength = 0;
     private static string lastScene = "";
 
+    public static Dictionary<string, DateObject> dateDictionary = new Dictionary<string, DateObject>() {
+        {"Boss", new DateObject("pixel", 10) },
+        {"Brunnette_1", new DateObject("Brunnette_1" , 1)},
+        {"Blonde_1", new DateObject("Blonde_1" , 1)},
+        {"Asian_1", new DateObject("Asian_1" , 1)},
+        {"Black_1", new DateObject("Black_1" , 1)}
+    };
+
     public static void LoadNextDate() {
         currentDate = dateSequence.Pop();
     }
@@ -28,6 +36,12 @@ public class Game : MonoBehaviour {
         }
 
         return false;
+    }
+
+    public static DateObject GetDate(string id, float modifier) {
+        DateObject d = dateDictionary[id];
+        d.difficulty = modifier;
+        return d;
     }
 }
 

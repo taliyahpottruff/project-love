@@ -15,10 +15,11 @@ public class MainMenu : MonoBehaviour {
         Game.dateSequence.Clear();
         Game.gameLength = length;
 
-        for (int i = 0; i < length; i++) {
+        Game.dateSequence.Push(Game.dateDictionary["Boss"]);
+        for (int i = 1; i < length; i++) {
             string spriteName = Utils.GetRandomDateSpriteName();
             Debug.Log(spriteName);
-            DateObject d = new DateObject(spriteName, length - i);
+            DateObject d = Game.GetDate(spriteName, length - i);
             Game.dateSequence.Push(d);
         }
     }
