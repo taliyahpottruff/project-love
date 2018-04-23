@@ -2,6 +2,7 @@
 
 public class MusicPlayer : MonoBehaviour {
     public AudioClip bossIntro;
+    public AudioClip bossSong;
 
     AudioSource src;
 
@@ -13,6 +14,12 @@ public class MusicPlayer : MonoBehaviour {
     public void PlayBossIntro() {
         src.Stop();
         src.clip = bossIntro;
+        src.Play();
+    }
+
+    public void PlayBossSong() {
+        src.Stop();
+        src.clip = bossSong;
         src.Play();
     }
 }

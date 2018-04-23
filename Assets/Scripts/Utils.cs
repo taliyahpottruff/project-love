@@ -36,4 +36,20 @@ public class Utils : MonoBehaviour {
         v.y = (sin * tx) + (cos * ty);
         return v;
     }
+
+    public static string Scramble(string input) {
+        string chars = "$%#@!*abcdefghijklmnopqrstuvwxyz1234567890?;:ABCDEFGHIJKLMNOPQRSTUVWXYZ^&";
+        string newString = "";
+        char[] charArray = input.ToCharArray();
+
+        for (int i = 0; i < charArray.Length; i++) {
+            bool b = char.IsLetterOrDigit(charArray[i]);
+            int index = Random.Range(0, chars.Length);
+
+            if (b) newString += chars[index];
+            else newString += charArray[i];
+        }
+
+        return newString;
+    }
 }

@@ -9,11 +9,11 @@ public class Game : MonoBehaviour {
     private static string lastScene = "";
 
     public static Dictionary<string, DateObject> dateDictionary = new Dictionary<string, DateObject>() {
-        {"Boss", new DateObject("pixel", 10) },
-        {"Brunnette_1", new DateObject("Brunnette_1" , 1)},
-        {"Blonde_1", new DateObject("Blonde_1" , 1)},
-        {"Asian_1", new DateObject("Asian_1" , 1)},
-        {"Black_1", new DateObject("Black_1" , 1)}
+        {"Boss", new DateObject("Boss", 10, 1, 1, 1) },
+        {"Date_1", new DateObject("Date_4" , 1, 0, 0, 0)},
+        {"Date_2", new DateObject("Date_3" , 1, 0, 0, 0)},
+        {"Date_4", new DateObject("Date_1" , 1, 0, 0, 0)},
+        {"Date_3", new DateObject("Date_2" , 1, 0, 0, 0)}
     };
 
     public static void LoadNextDate() {
@@ -48,9 +48,15 @@ public class Game : MonoBehaviour {
 public class DateObject {
     public Sprite sprite;
     public float difficulty;
+    public float hatesFlirting;
+    public float hatesJokes;
+    public float hatesStory;
     
-    public DateObject(string spriteName, float difficultyModifier) {
+    public DateObject(string spriteName, float difficultyModifier, float hatesFlirting, float hatesJokes, float hatesStory) {
         sprite = Resources.Load<Sprite>("Sprites/Dates/" + spriteName);
         difficulty = difficultyModifier;
+        this.hatesFlirting = hatesFlirting;
+        this.hatesJokes = hatesJokes;
+        this.hatesStory = hatesStory;
     }
 }

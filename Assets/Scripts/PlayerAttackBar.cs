@@ -5,6 +5,9 @@ using UnityEngine;
 public class PlayerAttackBar : MonoBehaviour {
     public float current = 0f;
     public float goal = 50f;
+    public float goal_flirt = 50f;
+    public float goal_joke = 50f;
+    public float goal_story = 50f;
     public float max = 100f;
     public float decreaseSpeed = 0.01f;
     public float increaseSpeed = 2f;

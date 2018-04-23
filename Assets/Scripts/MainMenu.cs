@@ -19,7 +19,7 @@ public class MainMenu : MonoBehaviour {
         for (int i = 1; i < length; i++) {
             string spriteName = Utils.GetRandomDateSpriteName();
             Debug.Log(spriteName);
-            DateObject d = Game.GetDate(spriteName, length - i);
+            DateObject d = Game.GetDate("Date_" + i, length - i);
             Game.dateSequence.Push(d);
         }
     }
